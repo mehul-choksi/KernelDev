@@ -12,6 +12,13 @@ _start:
 
 times 33 db 0 ; Forcefully fill the 33 bytes with all 0s, so that Bios Parameter Block writes dont interfere with our bootloader's address space.
 
+handle_zero:
+    mov ah, 0eh
+    mov al, 'A'
+    mov bx, 0x00
+    int 0x10
+    iret    ; iret is used when returning from an interrupt routine
+
 start:
 jmp 0x7c0:intialization ; Intialize code segment to 0x7c0 as well
 
@@ -25,7 +32,21 @@ intialization:
     mov ax, 0x00
     mov ss, ax
     mov sp, 0x7c00
+
+
     sti ; Re-enable hardware interrupts
+
+    ; Real mode: Interrupts are defined in IVT. IVT starts at 0x00
+    ; Addressing is done by offset:segment addressing pairs. 
+    ; The code starts at 0x7c0 x 16. And the offset is the distance to the handle_zero routine
+    ; This ensures that the IVT table points to the address handle_zero
+    mov word[ss:0x00], handle_zero
+    mov word[ss:0x02], 0x7c0
+
+    mov al, 0
+    ; mov bl, 0
+    div al
+
     mov si, message ; Copy the value of message into register si
     ;int 0x10    ; Invoke the bios. ah 0eh will print the value in al register ?
     call print
