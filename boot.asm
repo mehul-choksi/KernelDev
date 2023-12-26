@@ -6,9 +6,16 @@
 ORG 0
 BITS 16 ; tells that we're using a 16 bit address space 
 
-jmp 0x7c0:start ; Intialize code segment to 0x7c0 as well
+_start:
+    jmp short start ; Short jump to the start label
+    nop ; No operation
+
+times 33 db 0 ; Forcefully fill the 33 bytes with all 0s, so that Bios Parameter Block writes dont interfere with our bootloader's address space.
 
 start:
+jmp 0x7c0:intialization ; Intialize code segment to 0x7c0 as well
+
+intialization:
     cli ; Disable hardware interrupts for critical section
     ; Cannot directly write values to segment register - must use a buffer register like ax
     mov ax, 0x7c0
