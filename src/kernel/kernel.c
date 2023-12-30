@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "../idt/idt.h"
 #include <stdint.h>
 #include <stddef.h>
 
@@ -40,12 +41,20 @@ void printMessage(int starty, int startx, char* msg){
     }
 }
 
+// Simplified print function
+void print(char* msg){
+    for(int i = 0; i < strlen(msg); i++){
+        put_char(0, i, msg[i], 2);
+    }
+}
+
 void kernel_main(){
     initialize_terminal();
 
     char* msg = "MEHUL";
     printMessage(0, 0, msg);
 
-
+    // Initialize the interrupt descriptor table
+    initialize_idt();
 
 }

@@ -5,5 +5,6 @@
 #define VGA_WIDTH 80
 
 void kernel_main();
+void print(char* msg);
 
 #endif
